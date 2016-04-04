@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/hdub2/Project-White-Kodiak/issues"
   },
-  "homepage": "https://github.com/hdub2/Project-White-Kodiak#readme"
+  "homepage": "https://github.com/hdub2/Project-White-Kodiak#readme",
+  "dependencies": {
+    "mongodb": "^2.1.14"
+  }
 }
