@@ -8,10 +8,18 @@ var url = 'mongodb://localhost:27017/gear'
 // Accessible Functions - exported by interfaceDB
 // ----------------------------------------------------------
 module.exports = {
-  addGear : function(gearItem){
+  addGear  : function(gearItem){
     MongoClient.connect(url, function(err,db){
       assert.equal(null,err)
       insertGearItem(gearItem, db, function(){
+        db.close()
+      })
+    })
+  },
+  viewGear : function(name){
+    MongoClient.connect(url, function(err,db){
+      assert.equal(null,err)
+      findGearItem(name, db, function(){
         db.close()
       })
     })
@@ -30,4 +38,11 @@ function insertGearItem(gearItem, db, callback){
       console.log("Inserted 1 document into the 'gear' collection.")
       callback()
     })
+}
+
+function findGearItem(name, db, callback){
+  var cursor = db.collection('gear').find({"name": name})
+  cursor.each(function(err,doc){
+    console.log(doc)
+  })
 }
