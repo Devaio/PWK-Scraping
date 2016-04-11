@@ -1,29 +1,28 @@
 {
-  "name": "project-white-kodiak",
-  "version": "1.0.0",
-  "description": "Gear sharing site for the outdoors enthusiast.",
-  "main": "server.js",
+  "name": "pwk-web-scraping",
+  "version": "1.1.0",
+  "description": "Web scraper to build a mongo db for gear sharing project.",
+  "main": "scrape.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hdub2/Project-White-Kodiak.git"
+    "url": "git+https://github.com/hdub2/PWK-Scraping.git"
   },
   "keywords": [
     "sharing",
-    "outdoors"
+    "outdoors",
+    "web-scraping"
   ],
   "author": "hdub2 & DeeMichael",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hdub2/Project-White-Kodiak/issues"
-  },
-  "homepage": "https://github.com/hdub2/Project-White-Kodiak#readme",
+  "bugs": {},
   "dependencies": {
     "body-parser": "^1.15.0",
     "cheerio": "^0.20.0",
-    "mongodb": "^2.1.14",
-    "request": "^2.69.0"
+    "mongoose": "^4.4.12",
+    "request": "^2.69.0",
+    "webdriverio": "^4.0.5"
   }
 }
