@@ -21,8 +21,12 @@ casper.then(
               })
 casper.then(
               function(){
-                gear.forEach(function(e){
-                  console.log(e)
+                gear.forEach(function(e,i){
+                  console.log("---- Product ", i, " ----")
+                  console.log("brand : ", e.brand)
+                  console.log("name  : ", e.name)
+                  console.log("price : ", e.price)
+                  console.log("image : ", e.image)
                 })
               })
 casper.run()
@@ -31,6 +35,11 @@ casper.run()
 function getGear(){
   var gear = document.querySelectorAll('.product-tile')
   return Array.prototype.map.call(gear,function(e){
-    return e.querySelector('.product-title a').innerText.match(/(^.+)<br>/)
+    return {
+              brand : e.querySelector('.product-title a').innerText.match(/(^.+)\n/)[1],
+              name  : e.querySelector('.product-title a').innerText.match(/\n(.+$)/)[1],
+              price : e.querySelector('.price').innerText,
+              image : "http://www.rei.com" + e.querySelector('.result-image').getAttribute('src')
+            }
   })
 }
