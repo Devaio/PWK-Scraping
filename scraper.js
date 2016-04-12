@@ -2,8 +2,14 @@ var casper = require('casper').create({
                                         pageSettings: {
                                           userAgent : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0 Gecko/20130404 Firefox/23.0)'
                                         }
-                                      }),
- scrapeURL = 'https://www.rei.com/c/cargo-boxes-baskets-and-bags?r=c&ir=category%3Acargo-boxes-baskets-and-bags&page=1'
+                                      })
+
+if(casper.cli.has(0)){
+  scrapeURL = casper.cli.get(0)
+}else{
+  console.log("!-- scraper.js requires a url at command line!")
+  casper.exit()
+}
 
 var gear = []
 console.log("Starting scrape at: ", scrapeURL)
