@@ -1,9 +1,9 @@
 var casper = require('casper').create({
                                         pageSettings: {
-                                          userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0 Gecko/20130404 Firefox/23.0)'
+                                          userAgent : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0 Gecko/20130404 Firefox/23.0)'
                                         }
                                       }),
- scrapeURL = 'https://www.rei.com/c/climbing-hardware?r=c&ir=category%3Aclimbing-hardware&page=1'
+ scrapeURL = 'https://www.rei.com/c/cargo-boxes-baskets-and-bags?r=c&ir=category%3Acargo-boxes-baskets-and-bags&page=1'
 
 var gear = []
 console.log("Starting scrape at: ", scrapeURL)
@@ -20,6 +20,10 @@ casper.then(
               })
 casper.run()
 
+// *************************************************************************
+// processPage is responsible for iterating over all available results pages,
+// on which it calls getGear
+// *************************************************************************
 function processPage(){
   var newGear = this.evaluate(getGear)
   gear = gear.concat(newGear)
@@ -57,14 +61,15 @@ function getGear(){
     // -------------------------------------------------------------------------
     // set the value of brand
     // -------------------------------------------------------------------------
+    var brandEx = new RegExp(/(^.+)\n/)
     if(e.querySelector('.brand-name')!==null){
-      if(e.querySelector('.brand-name').innerText.match(/(^.+)\n/).length>1){
+      if(brandEx.test(e.querySelector('.brand-name').innerText)){
         item.brand = e.querySelector('.brand-name').innerText.match(/(^.+)\n/)[1]
       }else{
         item.brand = e.querySelector('.brand-name').innerText
       }
     }else if (e.querySelector('.product-title a')!==null){
-      if(e.querySelector('.product-title a').innerText.match(/(^.+)\n/).length>1){
+      if(brandEx.test(e.querySelector('.product-title a').innerText)){
         item.brand = e.querySelector('.product-title a').innerText.match(/(^.+)\n/)[1]
       }else{
         item.brand = e.querySelector('.product-title a').innerText
@@ -76,10 +81,11 @@ function getGear(){
     // -------------------------------------------------------------------------
     // set the value of name
     // -------------------------------------------------------------------------
+    var nameEx = new RegExp(/\n(.+$)/)
     if(e.querySelector('.clean-title')!==null){
       item.name = e.querySelector('.clean-title').innerText
     }else if (e.querySelector('.product-title a')!==null){
-      if(e.querySelector('.product-title a').innerText.match(/\n(.+$)/).length>1){
+      if(nameEx.test(e.querySelector('.product-title a').innerText)){
         item.name = e.querySelector('.product-title a').innerText.match(/\n(.+$)/)[1]
       }else{
         item.name = e.querySelector('.product-title a').innerText
@@ -91,14 +97,26 @@ function getGear(){
     // -------------------------------------------------------------------------
     // set the value of price
     // -------------------------------------------------------------------------
+    var priceEx = new RegExp(/^\$(\d+,?\d*)/)
     if(e.querySelector('.price')!==null){
-      if(e.querySelector('.price').innerText.match(/^\$(\d+,?\d+)/).length>1){
-        item.price = e.querySelector('.price').innerText.match(/^\$(\d+,?\d+)/)[1]
+      if(priceEx.test(e.querySelector('.price').innerText)){
+        item.price = e.querySelector('.price').innerText.match(/^\$(\d+,?\d*)/)[1]
       }else{
         item.price = e.querySelector('.price').innerText
       }
+    }else if(e.querySelector('.sale-price')!==null){
+      if(priceEx.test(e.querySelector('.sale-price').innerText)){
+        item.price = e.querySelector('.sale-price').innerText.match(/^\$(\d+,?\d*)/)[1]
+      }else{
+        item.price = e.querySelector('.sale-price').innerText
+      }
     }else{
       item.price = "no scrape."
+    }
+
+    // eliminate the comma!
+    if(item.price.includes(',')){
+      item.price = parseInt(item.price.replace(/,/g,""))
     }
 
     // -------------------------------------------------------------------------
@@ -113,6 +131,9 @@ function getGear(){
   })
 }
 
+// *************************************************************************
+// simple Stringify for the item objects we're returning
+// *************************************************************************
 function logGear(e,i){
   if(e!==null){
     console.log("\n---- Product ", i, " ----")
