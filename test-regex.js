@@ -3,6 +3,6 @@
 // console.log(str.match(/(^.+)\n/)[1])
 // console.log(str.match(/\n(.+$)/)[1])
 
-var str = '$1,699.00'
+var str = '$699.00'
 
-console.log(str.match(/^\$(\d+,\d+)/))
+console.log(str.match(/^\$(\d+,?\d+)/))
