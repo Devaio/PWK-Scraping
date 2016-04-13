@@ -1,4 +1,5 @@
-var Schema = require('mongoose').Schema,
+var mongoose = require('mongoose'),
+      Schema = require('mongoose').Schema,
 
 gearSchema = new Schema({
   type   : {type:String, required:true},  // Item category, i.e. backpack, climbing harness
