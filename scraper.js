@@ -4,15 +4,45 @@ var casper = require('casper').create({
                                         }
                                       })
 
+// Pulls the command line arguments
+// [0] - type of equipment being scraped
+// [1] - url to begin scraping
+// --------------------------------------------------------------------
 if(casper.cli.has(0)){
-  scrapeURL = casper.cli.get(0)
+  var gearType = casper.cli.get(0)
 }else{
-  console.log("!-- scraper.js requires a url at command line!")
+  console.log("!-- scraper.js requires a gear type & url at command line!")
+  console.log("!-- usage: 'casperjs scraper.js [type] [url]'")
+  casper.exit()
+}
+if(casper.cli.has(1)){
+  var scrapeURL = casper.cli.get(1)
+}else{
+  console.log("!-- scraper.js requires a gear type & url at command line!")
   casper.exit()
 }
 
-var gear = []
-console.log("Starting scrape at: ", scrapeURL)
+// *************************************************************************
+// db Connection
+// *************************************************************************
+// var mongoose = require('mongoose'),
+//        dbURL = 'mongodb://localhost:27017/gears'
+//
+// mongoose.connect(dbURL, function(err){
+//   if(!err) console.log("- Connected to gears db.")
+//   if(err){
+//     console.log("!- Failed to connect to gears db.")
+//     console.log(err)
+//   }
+// })
+
+// *************************************************************************     ****
+// casper backbone - most execution occurs within the recursive processPage
+// initiated within waitForSelector.  The trailing then() -
+// !! will be modified to include the db code instead of a print out             !!!!
+// *************************************************************************     ****
+var gearBox = []
+console.log("Starting scrape for: ", gearType, "at: ", scrapeURL)
 casper.start(scrapeURL,
               function(){
                 console.log("- Completed initial load - waiting for appearance of '.product-tile'.")
@@ -20,10 +50,16 @@ casper.start(scrapeURL,
 casper.waitForSelector('.product-tile', processPage)
 casper.then(
               function(){
-                gear.forEach(function(e,i){
+                gearBox.forEach(function(e,i){
                   logGear(e,i)
                 })
               })
+// casper.then(
+//               function(){
+//                 var Gear = require(__dirname + '/gear.js').Gear
+//
+//               }
+//             )
 casper.run()
 
 // *************************************************************************
@@ -32,15 +68,15 @@ casper.run()
 // *************************************************************************
 function processPage(){
   var newGear = this.evaluate(getGear)
-  gear = gear.concat(newGear)
+  gearBox = gearBox.concat(newGear)
 
   if(this.exists('#next-page.inactive')){
     // Last page reached - terminate()
-    console.log("- Last results page scraped. gear[].length: ", gear.length)
+    console.log("- Last results page scraped. gearBox[].length: ", gearBox.length)
     return
   }else{
     // Not yet at last page - recur processPage()
-    console.log("- Proceeding to next page.  gear[].length: ", gear.length)
+    console.log("- Proceeding to next page.  gearBox[].length: ", gearBox.length)
     this.thenClick('#pagination a[title="Next page"]')
         .then(function(){
           this.waitForSelector('.product-tile', processPage)
@@ -54,8 +90,8 @@ function processPage(){
 // not perfectly consistent on formatting the children of '.product-tile'
 // *************************************************************************
 function getGear(){
-  var gear = document.querySelectorAll('.product-tile')
-  return Array.prototype.map.call(gear,function(e){
+  var gearTiles = document.querySelectorAll('.product-tile')
+  return Array.prototype.map.call(gearTiles,function(e){
     var item = {}
 
     // *************************************************************************
@@ -63,6 +99,11 @@ function getGear(){
     // 2. parsing brand and name from a combined field '.product-title'
     // 3. gives up and writes 'no scrape'
     // *************************************************************************
+
+    // -------------------------------------------------------------------------
+    // set the value of type - directly from command line
+    // -------------------------------------------------------------------------
+    // item.type = gearType
 
     // -------------------------------------------------------------------------
     // set the value of brand
@@ -138,8 +179,27 @@ function getGear(){
 }
 
 // *************************************************************************
-// simple Stringify for the item objects we're returning
+// recursively proceeds through the finished gearBox[] - calling itself back
+// after each successful write as long as gearBox[] has contents
 // *************************************************************************
+// function dbWrite(){
+//   var currentGear = gearBox.pop()
+//   var newGear = new Gear({
+//                             type  : currentGear.type,
+//                             brand : currentGear.brand,
+//                             name  : currentGear.name,
+//                             price : currentGear.price,
+//                             image : currentGear.image
+//                           })
+//   newGear.save(function(err,gear){
+//
+//   })
+// }
+
+// ***************************************************************************** ****
+// simple Stringify for the item objects we're returning
+// !! used for build & debug - deprecated in final version - replaced by dbWrite !!!!
+// ***************************************************************************** ****
 function logGear(e,i){
   if(e!==null){
     console.log("\n---- Product ", i, " ----")
