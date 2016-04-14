@@ -6,7 +6,7 @@ var     fs = require('fs'),
                                       })
 
 
-// Pulls the command line arguments
+// Pull the command line arguments
 // [0] - type of equipment being scraped
 // [1] - url to begin scraping
 // --------------------------------------------------------------------
