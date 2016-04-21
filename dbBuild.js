@@ -12,7 +12,7 @@ if(process.argv[2]!==undefined){
 }
 
 // *****************************************************************************
-// db Connection - initialized here / closed out on the last iteration of dbSave
+// db connection - initialization / closed on last iteration of dbSave
 // *****************************************************************************
 var mongoose = require('mongoose'),
         Gear = require('./gear.js'),
@@ -57,7 +57,7 @@ function dbSave(){
                                   image : currentGear.image
                                 })
 
-    // check whether the db already contains an item wiht this name
+    // check whether the db already contains an item with this name
     Gear.findOne({name:newGear.name}, function(err,gear){
       if(!err && gear==null){
         // findOne concludes successfully and finds no duplicate - write the item
@@ -83,7 +83,7 @@ function dbSave(){
     })
   }else{
     // *************************************************************************
-    //
+    // db connection - closes on final iteration of dbSave
     // *************************************************************************
     mongoose.connection.close()
     console.log("-- ", successCounter, " gear items added to db successfully." )
@@ -94,22 +94,6 @@ function dbSave(){
         console.log(e)
       })
     }
-    return
-  }
-}
-
-// *****************************************************************************
-// simple Stringify for the item objects we're returning
-// !! used for build & debug - deprecated in final version - replaced by dbSave
-// *****************************************************************************
-function logGear(gear){
-  if(gear!==null){
-    console.log("type  : ", gear.type)
-    console.log("brand : ", gear.brand)
-    console.log("name  : ", gear.name)
-    console.log("price : ", gear.price)
-    console.log("image : ", gear.image)
-  }else{
     return
   }
 }
