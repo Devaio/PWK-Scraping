@@ -14,5 +14,5 @@ for this project is intended to contain unique items.
 dbBuild.js performs the db additions by recursively calling a dbSave function
 against an array of objects retrieved by parsing a json file.  For an entirely
 asynchronous approach that uses Promise.all to dispatch API and db requests for
-each parsed object, see the partner project - PWK-DBBuild:
+each parsed object concurrently, see the partner project - PWK-DBBuild:
 https://github.com/hdub2/PWK-DBBuild
